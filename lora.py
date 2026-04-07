@@ -99,3 +99,39 @@ lora_config = LoraConfig(
     lora_dropout=0.1,
     bias="none",
 )
+
+# Passo 4: Pipeline de Treinamento
+dataset_treino = load_dataset("json", data_files="dataset_treino.jsonl", split="train")
+
+def formatar_prompt(exemplo):
+    return {"text": f"### Pergunta:\n{exemplo['prompt']}\n\n### Resposta:\n{exemplo['response']}"}
+
+dataset_treino = dataset_treino.map(formatar_prompt, remove_columns=["prompt", "response"])
+
+
+training_args = SFTConfig(
+    output_dir="./resultados",
+    num_train_epochs=1,
+    per_device_train_batch_size=2,
+    gradient_accumulation_steps=1,
+    optim="adamw_torch",
+    learning_rate=2e-4,
+    lr_scheduler_type="cosine",
+    warmup_steps=10,
+    fp16=True,
+    logging_steps=10,
+    save_strategy="epoch",
+    report_to="none",
+    dataset_text_field="text",
+    max_seq_length=512,
+)
+
+trainer = SFTTrainer(
+    model=model,
+    train_dataset=dataset_treino,
+    peft_config=lora_config,
+    args=training_args,
+)
+trainer.train()
+
+trainer.model.save_pretrained("./lora_adaptador")
