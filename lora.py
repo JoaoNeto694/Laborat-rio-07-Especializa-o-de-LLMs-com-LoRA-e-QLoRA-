@@ -94,7 +94,7 @@ model.config.use_cache = False
 # Passo 3: Arquitetura do LoRA
 lora_config = LoraConfig(
     task_type="CAUSAL_LM",
-    r=16,
+    r=64,
     lora_alpha=16,
     lora_dropout=0.1,
     bias="none",
@@ -111,7 +111,7 @@ dataset_treino = dataset_treino.map(formatar_prompt, remove_columns=["prompt", "
 
 training_args = SFTConfig(
     output_dir="./resultados",
-    num_train_epochs=1,
+    num_train_epochs=3,
     per_device_train_batch_size=2,
     gradient_accumulation_steps=1,
     optim="adamw_torch",
