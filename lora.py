@@ -90,3 +90,12 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
 )
 model.config.use_cache = False
+
+# Passo 3: Arquitetura do LoRA
+lora_config = LoraConfig(
+    task_type="CAUSAL_LM",
+    r=16,
+    lora_alpha=16,
+    lora_dropout=0.1,
+    bias="none",
+)
